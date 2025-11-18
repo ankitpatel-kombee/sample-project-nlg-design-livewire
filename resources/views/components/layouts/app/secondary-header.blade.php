@@ -1,0 +1,271 @@
+<flux:sidebar sticky collapsible class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700">
+    <flux:sidebar.header>
+        <flux:sidebar.brand
+            href="#"
+            logo="https://fluxui.dev/img/demo/logo.png"
+            logo:dark="https://fluxui.dev/img/demo/dark-mode-logo.png"
+            name="Acme Inc."
+        />
+        <flux:sidebar.collapse
+            class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2 cursor-pointer"
+        />
+    </flux:sidebar.header>
+
+    {{-- <flux:sidebar.search placeholder="Search..." /> --}}
+    <flux:sidebar.nav>
+        <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+            {{ __('messages.side_menus.dashboard') }}
+        </flux:sidebar.item>
+
+        @if (Gate::allows('view-role'))
+
+            <flux:sidebar.item
+                icon='users'
+                href='/role'
+                data-testid='side_menu_role'
+                :current="request()->routeIs('role.*')"
+                wire:navigate>
+                {{ __('messages.side_menu.role') }}
+            </flux:sidebar.item>
+        
+@endif
+@if (Gate::allows('view-product'))
+
+            <flux:sidebar.item
+                icon='users'
+                href='/product'
+                data-testid='side_menu_product'
+                :current="request()->routeIs('product.*')"
+                wire:navigate>
+                {{ __('messages.side_menu.product') }}
+            </flux:sidebar.item>
+        
+@endif
+@if (Gate::allows('view-user'))
+
+            <flux:sidebar.item
+                icon='users'
+                href='/user'
+                data-testid='side_menu_user'
+                :current="request()->routeIs('user.*')"
+                wire:navigate>
+                {{ __('messages.side_menu.user') }}
+            </flux:sidebar.item>
+        
+@endif
+@if (Gate::allows('view-brand'))
+
+            <flux:sidebar.item
+                icon='users'
+                href='/brand'
+                data-testid='side_menu_brand'
+                :current="request()->routeIs('brand.*')"
+                wire:navigate>
+                {{ __('messages.side_menu.brand') }}
+            </flux:sidebar.item>
+        
+@endif
+
+        <flux:sidebar.group expandable :expanded="request()->routeIs('email-format') || request()->routeIs('email-template.*')" heading="{{ __('messages.side_menus.templates') }}" class="grid">
+            <flux:sidebar.item icon="envelope" :href="route('email-format')" :current="request()->routeIs('email-format')" wire:navigate>{{ __('messages.side_menus.templates_email_formats') }}</flux:sidebar.item>
+            <flux:sidebar.item icon="envelope" :href="route('email-template.index')" :current="request()->routeIs('email-template.*')" wire:navigate>{{ __('messages.side_menus.templates_email_templates') }}</flux:sidebar.item>
+        </flux:sidebar.group>
+
+        <flux:sidebar.group expandable heading="{{ __('messages.side_menus.user_import') }}" class="grid">
+            @if (Gate::allows('import-role'))
+
+            <flux:sidebar.item
+                icon='users'
+                href='/role-imports'
+                data-testid='side_menu_role-imports'
+                :current="request()->routeIs('role-imports.*')"
+                wire:navigate>
+                {{ __('messages.side_menu.role') }}
+            </flux:sidebar.item>
+        
+@endif
+@if (Gate::allows('import-product'))
+
+            <flux:sidebar.item
+                icon='users'
+                href='/product-imports'
+                data-testid='side_menu_product-imports'
+                :current="request()->routeIs('product-imports.*')"
+                wire:navigate>
+                {{ __('messages.side_menu.product') }}
+            </flux:sidebar.item>
+        
+@endif
+@if (Gate::allows('import-user'))
+
+            <flux:sidebar.item
+                icon='users'
+                href='/user-imports'
+                data-testid='side_menu_user-imports'
+                :current="request()->routeIs('user-imports.*')"
+                wire:navigate>
+                {{ __('messages.side_menu.user') }}
+            </flux:sidebar.item>
+        
+@endif
+@if (Gate::allows('import-brand'))
+
+            <flux:sidebar.item
+                icon='users'
+                href='/brand-imports'
+                data-testid='side_menu_brand-imports'
+                :current="request()->routeIs('brand-imports.*')"
+                wire:navigate>
+                {{ __('messages.side_menu.brand') }}
+            </flux:sidebar.item>
+        
+@endif
+        </flux:sidebar.group>
+
+    </flux:sidebar.nav>
+</flux:sidebar>
+
+
+{{-- ✅ Responsive Header --}}
+<flux:header class="block! bg-white lg:bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700 px-0">
+    {{-- 📱 Mobile Navbar --}}
+    <flux:navbar class="flex items-center justify-between lg:hidden py-3">
+        <div class="flex items-center gap-3">
+            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+        </div>
+
+        <div class="flex items-center gap-2">
+            {{-- Theme Toggle --}}
+            <flux:dropdown x-data align="end">
+                <flux:button variant="subtle" square aria-label="Appearance">
+                    <flux:icon.sun x-show="$flux.appearance === 'light'" variant="mini" class="text-zinc-500 dark:text-white" />
+                    <flux:icon.moon x-show="$flux.appearance === 'dark'" variant="mini" class="text-zinc-500 dark:text-white" />
+                </flux:button>
+                <flux:menu>
+                    <flux:menu.item icon="sun" x-on:click="$flux.appearance = 'light'">{{ __('messages.appearance.light') }}</flux:menu.item>
+                    <flux:menu.item icon="moon" x-on:click="$flux.appearance = 'dark'">{{ __('messages.appearance.dark') }}</flux:menu.item>
+                    <flux:menu.item icon="computer-desktop" x-on:click="$flux.appearance = 'system'">{{ __('messages.appearance.system') }}</flux:menu.item>
+                </flux:menu>
+            </flux:dropdown>
+
+            {{-- Language --}}
+            <livewire:language-switcher :user="auth()->user()" />
+
+            {{-- User Dropdown --}}
+            <flux:dropdown position="top" align="end">
+                <flux:profile class="cursor-pointer" :initials="auth()->user()->initials()" />
+                <flux:menu>
+                    <flux:menu.radio.group>
+                        <div class="p-0 text-sm font-normal">
+                            <div class="flex items-center gap-2 px-1 py-1.5">
+                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+                                    <span class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                        {{ auth()->user()->initials() }}
+                                    </span>
+                                </span>
+                                <div class="grid flex-1 text-start text-sm leading-tight">
+                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
+                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </flux:menu.radio.group>
+
+                    <flux:menu.separator />
+                    <flux:menu.item :href="route('settings.password')" data-testid="side_menu_change_password" wire:navigate>
+                        @lang('messages.side_menus.label_change_password')
+                    </flux:menu.item>
+                    <flux:menu.separator />
+
+                    @if(Gate::allows('edit-permission') || Auth::user()->role_id == config('constants.roles.admin'))
+                        <flux:menu.item :href="route('permission')" data-testid="side_menu_permissions" wire:navigate>
+                            @lang('messages.side_menus.label_permissions')
+                        </flux:menu.item>
+                        <flux:menu.separator />
+                    @endif
+
+                    <form method="POST" action="{{ route('logout') }}" class="w-full">
+                        @csrf
+                        <flux:menu.item as="button" type="submit" data-testid="side_menu_logout" icon="arrow-right-start-on-rectangle" class="w-full">
+                            {{ __('messages.side_menus.label_logout') }}
+                        </flux:menu.item>
+                    </form>
+                </flux:menu>
+            </flux:dropdown>
+        </div>
+    </flux:navbar>
+
+    {{-- 💻 Desktop Header --}}
+    <div class="hidden lg:flex items-center justify-between w-full mt-3">
+        {{-- Left-aligned Breadcrumb (hidden on mobile) --}}
+        <div class="flex-1 pl-6 hidden md:block">
+            <livewire:breadcrumb />
+        </div>
+
+        {{-- Right Section --}}
+        <div class="flex items-center gap-3 pr-6 flex-wrap justify-end">
+            {{-- Theme Dropdown --}}
+            <flux:dropdown x-data align="end">
+                <flux:button variant="subtle" square class="group cursor-pointer" aria-label="Preferred color scheme" data-testid="side_menu_appearance">
+                    <flux:icon.sun x-show="$flux.appearance === 'light'" variant="mini" class="text-zinc-500 dark:text-white" />
+                    <flux:icon.moon x-show="$flux.appearance === 'dark'" variant="mini" class="text-zinc-500 dark:text-white" />
+                    <flux:icon.moon x-show="$flux.appearance === 'system' && $flux.dark" variant="mini" />
+                    <flux:icon.sun x-show="$flux.appearance === 'system' && ! $flux.dark" variant="mini" />
+                </flux:button>
+                <flux:menu>
+                    <flux:menu.item icon="sun" class="cursor-pointer" x-on:click="$flux.appearance = 'light'">
+                        {{ __('messages.appearance.light') }}</flux:menu.item>
+                    <flux:menu.item icon="moon" class="cursor-pointer" x-on:click="$flux.appearance = 'dark'">
+                        {{ __('messages.appearance.dark') }}</flux:menu.item>
+                    <flux:menu.item icon="computer-desktop" class="cursor-pointer" x-on:click="$flux.appearance = 'system'">
+                        {{ __('messages.appearance.system') }}</flux:menu.item>
+                </flux:menu>
+            </flux:dropdown>
+
+            {{-- Language Switcher --}}
+            <livewire:language-switcher :user="auth()->user()" />
+
+            {{-- User Menu --}}
+            <flux:dropdown position="top" align="end">
+                <flux:profile class="cursor-pointer" :initials="auth()->user()->initials()" />
+                <flux:menu>
+                    <flux:menu.radio.group>
+                        <div class="p-0 text-sm font-normal">
+                            <div class="flex items-center gap-2 px-1 py-1.5">
+                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+                                    <span class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                        {{ auth()->user()->initials() }}
+                                    </span>
+                                </span>
+                                <div class="grid flex-1 text-start text-sm leading-tight">
+                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
+                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </flux:menu.radio.group>
+
+                    <flux:menu.separator />
+                    <flux:menu.item :href="route('settings.password')" data-testid="side_menu_change_password" wire:navigate>
+                        @lang('messages.side_menus.label_change_password')
+                    </flux:menu.item>
+                    <flux:menu.separator />
+
+                    @if(Gate::allows('edit-permission') || Auth::user()->role_id == config('constants.roles.admin'))
+                        <flux:menu.item :href="route('permission')" data-testid="side_menu_permissions" wire:navigate>
+                            @lang('messages.side_menus.label_permissions')
+                        </flux:menu.item>
+                        <flux:menu.separator />
+                    @endif
+
+                    <form method="POST" action="{{ route('logout') }}" class="w-full">
+                        @csrf
+                        <flux:menu.item as="button" type="submit" data-testid="side_menu_logout" icon="arrow-right-start-on-rectangle" class="w-full cursor-pointer">
+                            {{ __('messages.side_menus.label_logout') }}
+                        </flux:menu.item>
+                    </form>
+                </flux:menu>
+            </flux:dropdown>
+        </div>
+    </div>
+</flux:header>
